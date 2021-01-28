@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(LayoutInflater.from(this@MainActivity))
         setContentView(binding.root)
-
+        setSupportActionBar(binding.toolbar)
         binding.fabAddPlaceActivity.setOnClickListener {
             val intentToAddPlaceActivity = Intent(this@MainActivity,AddPlaceActivity::class.java)
             startActivity(intentToAddPlaceActivity)

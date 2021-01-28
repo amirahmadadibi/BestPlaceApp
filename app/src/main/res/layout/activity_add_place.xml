@@ -6,4 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".AddPlaceActivity">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/primaryColor"
+        android:theme="@style/CustomToolbar"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
