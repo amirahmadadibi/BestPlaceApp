@@ -1,20 +1,18 @@
 package net.codeinreal.projects.bestplace
 
 import android.Manifest
-import android.R.attr.typeface
+import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.DexterBuilder
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
@@ -30,6 +28,7 @@ class AddPlaceActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "TAG"
+        const val REQUEST_CODE_CAMERA = 13134
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,7 +88,7 @@ class AddPlaceActivity : AppCompatActivity() {
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
                     if (report!!.areAllPermissionsGranted()) {
-
+                        capturePictureByCamera()
                     }
                 }
 
@@ -104,6 +103,11 @@ class AddPlaceActivity : AppCompatActivity() {
             .check()
     }
 
+
+    private fun capturePictureByCamera(){
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(cameraIntent,REQUEST_CODE_CAMERA)
+    }
     private fun showRationalPermiison() {
         AlertDialog.Builder(this@AddPlaceActivity)
             .setTitle("اجازه دسترسی به فایل ها و دوربین")
@@ -146,5 +150,22 @@ class AddPlaceActivity : AppCompatActivity() {
             })
 
         picker.show()
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK){
+            if(requestCode == REQUEST_CODE_CAMERA){
+                val bitmpatImage = data?.extras?.get("data") as Bitmap
+                binding.imageViewSelectedPicture.setImageBitmap(bitmpatImage)
+            }
+        }
+
+        if(resultCode == Activity.RESULT_CANCELED){
+            if(requestCode == REQUEST_CODE_CAMERA){
+                //cancel
+            }
+        }
     }
 }
