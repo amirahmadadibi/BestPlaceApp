@@ -50,4 +50,9 @@ dependencies {
     //https://github.com/aliab/Persian-Date-Picker-Dialog
     implementation 'com.github.aliab:Persian-Date-Picker-Dialog:1.5.2'
 
+
+    //dexter
+    implementation 'com.karumi:dexter:6.2.2'
+
+    
 }
