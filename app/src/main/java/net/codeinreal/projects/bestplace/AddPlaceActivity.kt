@@ -21,6 +21,9 @@ import ir.hamsaa.persiandatepicker.Listener
 import ir.hamsaa.persiandatepicker.PersianDatePickerDialog
 import ir.hamsaa.persiandatepicker.util.PersianCalendar
 import net.codeinreal.projects.bestplace.databinding.ActivityAddPlaceBinding
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 
 class AddPlaceActivity : AppCompatActivity() {
@@ -104,20 +107,21 @@ class AddPlaceActivity : AppCompatActivity() {
     }
 
 
-    private fun capturePictureByCamera(){
+    private fun capturePictureByCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        startActivityForResult(cameraIntent,REQUEST_CODE_CAMERA)
+        startActivityForResult(cameraIntent, REQUEST_CODE_CAMERA)
     }
+
     private fun showRationalPermiison() {
         AlertDialog.Builder(this@AddPlaceActivity)
             .setTitle("اجازه دسترسی به فایل ها و دوربین")
             .setPositiveButton("برو به تنظیمات") { _, _ ->
                 val settinsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                val uri  = Uri.fromParts("packge",packageName,null)
-                settinsIntent.data  = uri
+                val uri = Uri.fromParts("packge", packageName, null)
+                settinsIntent.data = uri
                 startActivity(settinsIntent)
             }
-            .setNegativeButton("اجازه نمیدم"){dialog,_ ->
+            .setNegativeButton("اجازه نمیدم") { dialog, _ ->
                 finish()
             }
             .show()
@@ -155,17 +159,40 @@ class AddPlaceActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode == Activity.RESULT_OK){
-            if(requestCode == REQUEST_CODE_CAMERA){
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CAMERA) {
                 val bitmpatImage = data?.extras?.get("data") as Bitmap
+
+                saveImageInInternalStorage(bitmpatImage)
                 binding.imageViewSelectedPicture.setImageBitmap(bitmpatImage)
             }
         }
 
-        if(resultCode == Activity.RESULT_CANCELED){
-            if(requestCode == REQUEST_CODE_CAMERA){
+        if (resultCode == Activity.RESULT_CANCELED) {
+            if (requestCode == REQUEST_CODE_CAMERA) {
                 //cancel
             }
         }
+    }
+
+
+    fun saveImageInInternalStorage(bitmap:Bitmap){
+        val fileAndPath = buildFile("test.jpg")
+        try{
+            val portal = buildOutputStream(fileAndPath)
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,portal)
+            portal.flush()
+            portal.close()
+        }catch (ex:IOException){
+            ex.printStackTrace()
+        }
+    }
+
+    fun buildOutputStream(file: File): FileOutputStream {
+        return FileOutputStream(file)
+    }
+
+    fun buildFile(fileName: String): File {//amir.mp4
+        return File(this.filesDir, fileName)
     }
 }
