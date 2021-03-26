@@ -22,6 +22,7 @@ import ir.hamsaa.persiandatepicker.PersianDatePickerDialog
 import ir.hamsaa.persiandatepicker.util.PersianCalendar
 import net.codeinreal.projects.bestplace.databinding.ActivityAddPlaceBinding
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 
@@ -32,6 +33,7 @@ class AddPlaceActivity : AppCompatActivity() {
     companion object {
         const val TAG = "TAG"
         const val REQUEST_CODE_CAMERA = 13134
+        const val REQUEST_CODE_GALLERY = 13135
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,8 +74,7 @@ class AddPlaceActivity : AppCompatActivity() {
                             choosePhotoFromGallery()
                         }
                         1 -> {
-                            Toast.makeText(this@AddPlaceActivity, "camera", Toast.LENGTH_SHORT)
-                                .show()
+                            choosePhotoByCamera()
                         }
                     }
                 }
@@ -81,6 +82,29 @@ class AddPlaceActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun choosePhotoByCamera(){
+        Dexter.withContext(this@AddPlaceActivity)
+            .withPermissions(
+                Manifest.permission.CAMERA
+            )
+            .withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
+                    if (report!!.areAllPermissionsGranted()) {
+                        capturePictureByCamera()
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    p0: MutableList<PermissionRequest>?,
+                    p1: PermissionToken?
+                ) {
+                    showRationalPermiison()
+                }
+
+            })
+            .check()
+    }
     private fun choosePhotoFromGallery() {
         Dexter.withContext(this@AddPlaceActivity)
             .withPermissions(
@@ -91,7 +115,10 @@ class AddPlaceActivity : AppCompatActivity() {
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
                     if (report!!.areAllPermissionsGranted()) {
-                        capturePictureByCamera()
+//                        capturePictureByCamera()
+                        val galleryIntent =
+                            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                        startActivityForResult(galleryIntent, REQUEST_CODE_GALLERY)
                     }
                 }
 
@@ -167,23 +194,40 @@ class AddPlaceActivity : AppCompatActivity() {
                 binding.imageViewSelectedPicture.setImageBitmap(bitmpatImage)
             }
         }
-
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_GALLERY) {
+                if (data != null) {
+                    val contentUri = data.data//uri
+                  try{
+                      val imageBitmap =
+                          MediaStore.Images.Media.getBitmap(this.contentResolver, contentUri)
+                      binding.imageViewSelectedPicture.setImageBitmap(imageBitmap)
+                  }catch (ex:FileNotFoundException){
+                      Toast.makeText(this,"فایل انتخابی شما پیدا نشد",Toast.LENGTH_SHORT).show()
+                  }
+                }
+            }
+        }
         if (resultCode == Activity.RESULT_CANCELED) {
             if (requestCode == REQUEST_CODE_CAMERA) {
-                //cancel
+                Toast.makeText(this,"عکسی نگرفتید",Toast.LENGTH_SHORT).show()
+            }
+
+            if (requestCode == REQUEST_CODE_GALLERY) {
+                Toast.makeText(this,"فایلی انتخاب نکردید",Toast.LENGTH_SHORT).show()
             }
         }
     }
 
 
-    fun saveImageInInternalStorage(bitmap:Bitmap){
+    fun saveImageInInternalStorage(bitmap: Bitmap) {
         val fileAndPath = buildFile("test.jpg")
-        try{
+        try {
             val portal = buildOutputStream(fileAndPath)
-            bitmap.compress(Bitmap.CompressFormat.JPEG,100,portal)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, portal)
             portal.flush()
             portal.close()
-        }catch (ex:IOException){
+        } catch (ex: IOException) {
             ex.printStackTrace()
         }
     }
