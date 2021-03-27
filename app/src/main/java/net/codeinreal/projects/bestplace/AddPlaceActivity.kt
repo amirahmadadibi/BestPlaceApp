@@ -29,6 +29,7 @@ import java.io.IOException
 
 class AddPlaceActivity : AppCompatActivity() {
     lateinit var binding: ActivityAddPlaceBinding
+    var imageAddressLocation: String? = null
 
     companion object {
         const val TAG = "TAG"
@@ -49,9 +50,9 @@ class AddPlaceActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        binding.textInputEditTextDate.showSoftInputOnFocus = false
+        binding.edtDate.showSoftInputOnFocus = false
 
-        binding.textInputEditTextDate.setOnFocusChangeListener { v, hasFocus ->
+        binding.edtDate.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) return@setOnFocusChangeListener
 
             showDatePicker()
@@ -84,7 +85,12 @@ class AddPlaceActivity : AppCompatActivity() {
 
 
         binding.buttonAddPlace.setOnClickListener {
-            val myBestPlace = BestPlace("test","text","tesst","text","text",0.0,0.0)
+            val title = binding.edtTitle.text.toString()
+            val description = binding.edtDescription.text.toString()
+            val date = binding.edtDate.text.toString()
+            val location = binding.edtLocation.text.toString()
+            val myBestPlace =
+                BestPlace(title, imageAddressLocation!!, description, date, location, 0.0, 0.0)
             val db = DatabaseHandler(this)
             db.addPlace(myBestPlace)
         }
@@ -176,7 +182,7 @@ class AddPlaceActivity : AppCompatActivity() {
             .setShowInBottomSheet(false)
             .setListener(object : Listener {
                 override fun onDateSelected(persianCalendar: PersianCalendar) {
-                    binding.textInputEditTextDate.setText(persianCalendar?.persianLongDate?.toString())
+                    binding.edtDate.setText(persianCalendar?.persianLongDate?.toString())
 
                 }
 
@@ -199,7 +205,7 @@ class AddPlaceActivity : AppCompatActivity() {
             if (requestCode == REQUEST_CODE_CAMERA) {
                 val bitmpatImage = data?.extras?.get("data") as Bitmap
 
-                saveImageInInternalStorage(bitmpatImage)
+                imageAddressLocation = saveImageInInternalStorage(bitmpatImage)
                 binding.imageViewSelectedPicture.setImageBitmap(bitmpatImage)
             }
         }
@@ -210,6 +216,8 @@ class AddPlaceActivity : AppCompatActivity() {
                     try {
                         val imageBitmap =
                             MediaStore.Images.Media.getBitmap(this.contentResolver, contentUri)
+                        imageAddressLocation = saveImageInInternalStorage(imageBitmap)
+
                         binding.imageViewSelectedPicture.setImageBitmap(imageBitmap)
                     } catch (ex: FileNotFoundException) {
                         Toast.makeText(this, "فایل انتخابی شما پیدا نشد", Toast.LENGTH_SHORT).show()
@@ -229,7 +237,7 @@ class AddPlaceActivity : AppCompatActivity() {
     }
 
 
-    fun saveImageInInternalStorage(bitmap: Bitmap) {
+    fun saveImageInInternalStorage(bitmap: Bitmap): String {
         val fileAndPath = buildFile("test.jpg")
         try {
             val portal = buildOutputStream(fileAndPath)
@@ -239,6 +247,8 @@ class AddPlaceActivity : AppCompatActivity() {
         } catch (ex: IOException) {
             ex.printStackTrace()
         }
+
+        return fileAndPath.absolutePath
     }
 
     fun buildOutputStream(file: File): FileOutputStream {
