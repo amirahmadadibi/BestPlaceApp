@@ -80,10 +80,18 @@ class AddPlaceActivity : AppCompatActivity() {
                 }
                 .show()
         }
+
+
+
+        binding.buttonAddPlace.setOnClickListener {
+            val myBestPlace = BestPlace("test","text","tesst","text","text",0.0,0.0)
+            val db = DatabaseHandler(this)
+            db.addPlace(myBestPlace)
+        }
     }
 
 
-    private fun choosePhotoByCamera(){
+    private fun choosePhotoByCamera() {
         Dexter.withContext(this@AddPlaceActivity)
             .withPermissions(
                 Manifest.permission.CAMERA
@@ -105,6 +113,7 @@ class AddPlaceActivity : AppCompatActivity() {
             })
             .check()
     }
+
     private fun choosePhotoFromGallery() {
         Dexter.withContext(this@AddPlaceActivity)
             .withPermissions(
@@ -198,23 +207,23 @@ class AddPlaceActivity : AppCompatActivity() {
             if (requestCode == REQUEST_CODE_GALLERY) {
                 if (data != null) {
                     val contentUri = data.data//uri
-                  try{
-                      val imageBitmap =
-                          MediaStore.Images.Media.getBitmap(this.contentResolver, contentUri)
-                      binding.imageViewSelectedPicture.setImageBitmap(imageBitmap)
-                  }catch (ex:FileNotFoundException){
-                      Toast.makeText(this,"فایل انتخابی شما پیدا نشد",Toast.LENGTH_SHORT).show()
-                  }
+                    try {
+                        val imageBitmap =
+                            MediaStore.Images.Media.getBitmap(this.contentResolver, contentUri)
+                        binding.imageViewSelectedPicture.setImageBitmap(imageBitmap)
+                    } catch (ex: FileNotFoundException) {
+                        Toast.makeText(this, "فایل انتخابی شما پیدا نشد", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
         if (resultCode == Activity.RESULT_CANCELED) {
             if (requestCode == REQUEST_CODE_CAMERA) {
-                Toast.makeText(this,"عکسی نگرفتید",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "عکسی نگرفتید", Toast.LENGTH_SHORT).show()
             }
 
             if (requestCode == REQUEST_CODE_GALLERY) {
-                Toast.makeText(this,"فایلی انتخاب نکردید",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "فایلی انتخاب نکردید", Toast.LENGTH_SHORT).show()
             }
         }
     }

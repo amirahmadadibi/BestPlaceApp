@@ -54,5 +54,6 @@ dependencies {
     //dexter
     implementation 'com.karumi:dexter:6.2.2'
 
-    
+    debugImplementation("com.infinum.dbinspector:dbinspector:5.2.9")
+    releaseImplementation("com.infinum.dbinspector:dbinspector-no-op:5.2.9")
 }
