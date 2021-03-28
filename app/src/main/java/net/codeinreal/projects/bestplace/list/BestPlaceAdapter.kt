@@ -8,14 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import net.codeinreal.projects.bestplace.BestPlace
 import net.codeinreal.projects.bestplace.R
+import net.codeinreal.projects.bestplace.listeners.OnRecyclerViewItemClicked
 import java.io.File
 
 class BestPlaceAdapter(var context: Context, var list: ArrayList<BestPlace>) :
     RecyclerView.Adapter<BestPlaceAdapter.BestPlaceViewHolder>() {
-
+    var onRecyclerViewItemClicked: OnRecyclerViewItemClicked? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BestPlaceViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.item_place, parent, false)
         return BestPlaceViewHolder(view)
@@ -31,7 +33,9 @@ class BestPlaceAdapter(var context: Context, var list: ArrayList<BestPlace>) :
         )
 
         holder.imageViewPlace.setImageBitmap(imageBitmap)
-
+        holder.itemView.setOnClickListener {
+            onRecyclerViewItemClicked?.onBestPlaceItemClicked(position,bestPlace)//happened
+        }
     }
 
     override fun getItemCount() = list.size
@@ -47,5 +51,7 @@ class BestPlaceAdapter(var context: Context, var list: ArrayList<BestPlace>) :
         }
     }
 
-
+    fun setRecyclerViewItemClicked(onRecyclerViewItemClicked: OnRecyclerViewItemClicked){
+        this.onRecyclerViewItemClicked = onRecyclerViewItemClicked
+    }
 }

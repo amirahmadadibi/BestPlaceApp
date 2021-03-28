@@ -6,9 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.codeinreal.projects.bestplace.databinding.ActivityMainBinding
 import net.codeinreal.projects.bestplace.list.BestPlaceAdapter
+import net.codeinreal.projects.bestplace.listeners.OnRecyclerViewItemClicked
 import org.koin.android.ext.android.bind
 
 class MainActivity : AppCompatActivity() {
@@ -41,6 +43,13 @@ class MainActivity : AppCompatActivity() {
         val bestPlaceAdapter = BestPlaceAdapter(this, db.getAllPlaces())
         binding.recyclerViewMain.adapter = bestPlaceAdapter
         binding.recyclerViewMain.layoutManager = LinearLayoutManager(this)
+
+        bestPlaceAdapter.setRecyclerViewItemClicked(object:OnRecyclerViewItemClicked{
+            override fun onBestPlaceItemClicked(position: Int, bestPlace: BestPlace) {
+                Toast.makeText(this@MainActivity,position.toString(),Toast.LENGTH_SHORT).show()
+            }
+
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
