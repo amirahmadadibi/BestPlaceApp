@@ -1,5 +1,6 @@
 package net.codeinreal.projects.bestplace
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,24 +12,43 @@ import net.codeinreal.projects.bestplace.list.BestPlaceAdapter
 import org.koin.android.ext.android.bind
 
 class MainActivity : AppCompatActivity() {
+
+    lateinit var binding: ActivityMainBinding
+
+    companion object {
+        const val REQUEST_ADD_PLACE = 12129
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityMainBinding.inflate(LayoutInflater.from(this@MainActivity))
+        binding = ActivityMainBinding.inflate(LayoutInflater.from(this@MainActivity))
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        val db = DatabaseHandler(this)
 
-
-        val bestPlaceAdapter = BestPlaceAdapter(this,db.getAllPlaces())
-        binding.recyclerViewMain.adapter = bestPlaceAdapter
-        binding.recyclerViewMain.layoutManager  = LinearLayoutManager(this)
-
+        setupRecyclerView()
 
         binding.fabAddPlaceActivity.setOnClickListener {
-            val intentToAddPlaceActivity = Intent(this@MainActivity,AddPlaceActivity::class.java)
-            startActivity(intentToAddPlaceActivity)
+            val intentToAddPlaceActivity = Intent(this@MainActivity, AddPlaceActivity::class.java)
+            startActivityForResult(intentToAddPlaceActivity, REQUEST_ADD_PLACE)
         }
 
 
+    }
+
+    fun setupRecyclerView() {
+        val db = DatabaseHandler(this)
+
+        val bestPlaceAdapter = BestPlaceAdapter(this, db.getAllPlaces())
+        binding.recyclerViewMain.adapter = bestPlaceAdapter
+        binding.recyclerViewMain.layoutManager = LinearLayoutManager(this)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_ADD_PLACE) {
+                setupRecyclerView()
+            }
+        }
     }
 }

@@ -93,6 +93,8 @@ class AddPlaceActivity : AppCompatActivity() {
                 BestPlace(title, imageAddressLocation!!, description, date, location, 0.0, 0.0)
             val db = DatabaseHandler(this)
             db.addPlace(myBestPlace)
+            setResult(Activity.RESULT_OK)
+            finish()
         }
     }
 
@@ -257,5 +259,10 @@ class AddPlaceActivity : AppCompatActivity() {
 
     fun buildFile(fileName: String): File {//amir.mp4
         return File(this.filesDir, fileName)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        setResult(Activity.RESULT_CANCELED)
     }
 }
