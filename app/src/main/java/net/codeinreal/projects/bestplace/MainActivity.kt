@@ -46,7 +46,9 @@ class MainActivity : AppCompatActivity() {
 
         bestPlaceAdapter.setRecyclerViewItemClicked(object:OnRecyclerViewItemClicked{
             override fun onBestPlaceItemClicked(position: Int, bestPlace: BestPlace) {
-                Toast.makeText(this@MainActivity,position.toString(),Toast.LENGTH_SHORT).show()
+                val detailIntent = Intent(this@MainActivity,DetailsActivity::class.java)
+                detailIntent.putExtra("bestPlace",bestPlace)
+                startActivity(detailIntent)
             }
 
         })

@@ -1,7 +1,10 @@
 package net.codeinreal.projects.bestplace
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.util.*
 
+@Parcelize
 class BestPlace constructor(
     var title: String,
     val image: String,
@@ -10,7 +13,7 @@ class BestPlace constructor(
     val location: String,
     val latitude: Double,
     val longitude: Double
-) {
+):Parcelable {
     var id: String? = null
 
     init{
