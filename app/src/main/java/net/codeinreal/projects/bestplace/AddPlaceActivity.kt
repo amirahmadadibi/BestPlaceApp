@@ -30,6 +30,7 @@ import java.io.IOException
 class AddPlaceActivity : AppCompatActivity() {
     lateinit var binding: ActivityAddPlaceBinding
     var imageAddressLocation: String? = null
+    private var id:String? = null
 
     companion object {
         const val TAG = "TAG"
@@ -58,6 +59,10 @@ class AddPlaceActivity : AppCompatActivity() {
             showDatePicker()
 
 
+        }
+
+        if(intent.extras?.getString("id") != null){
+            id = intent.extras?.getString("id")
         }
 
         binding.buttonSelectImage.setOnClickListener {
@@ -91,6 +96,10 @@ class AddPlaceActivity : AppCompatActivity() {
             val location = binding.edtLocation.text.toString()
             val myBestPlace =
                 BestPlace(title, imageAddressLocation!!, description, date, location, 0.0, 0.0)
+
+            id?.let {
+                myBestPlace.id = it
+            }
             val db = DatabaseHandler(this)
             db.addPlace(myBestPlace)
             setResult(Activity.RESULT_OK)

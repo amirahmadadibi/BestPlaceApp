@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val REQUEST_ADD_PLACE = 12129
+        const val REQUEST_EDIT_PLACE = 12122
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,10 +59,10 @@ class MainActivity : AppCompatActivity() {
 
         val editSwipeCallback = object:SwipeToEditCallback(this){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                //viewHolder.absoluteAdapterPosition//int 0 1 2
-                //bestPlaceAdapter.list.get(viewHolder.absoluteAdapterPosition)//bestPlace
-                val title = bestPlaceAdapter.list.get(viewHolder.absoluteAdapterPosition).title//bestPlace
-                Toast.makeText(this@MainActivity,title,Toast.LENGTH_SHORT).show()
+                val id = bestPlaceAdapter.list.get(viewHolder.absoluteAdapterPosition).id
+                val intentEdit = Intent(this@MainActivity,AddPlaceActivity::class.java)
+                intentEdit.putExtra("id",id)
+                startActivityForResult(intentEdit, REQUEST_EDIT_PLACE)
             }
 
         }
@@ -75,6 +76,10 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_ADD_PLACE) {
+                setupRecyclerView()
+            }
+
+            if(requestCode == REQUEST_EDIT_PLACE){
                 setupRecyclerView()
             }
         }

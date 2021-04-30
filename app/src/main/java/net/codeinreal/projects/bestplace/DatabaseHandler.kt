@@ -51,7 +51,7 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, "bestplace",
         contentValues.put(KEY_LATITUDE, bestPlace.latitude)
         contentValues.put(KEY_LONGITUDE, bestPlace.longitude)
 
-        writableDatabase.insert(TABLE_NAME, null, contentValues)
+        writableDatabase.insertWithOnConflict(TABLE_NAME, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE)
         writableDatabase.close()
     }
 
