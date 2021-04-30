@@ -7,10 +7,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import net.codeinreal.projects.bestplace.databinding.ActivityMainBinding
 import net.codeinreal.projects.bestplace.list.BestPlaceAdapter
 import net.codeinreal.projects.bestplace.listeners.OnRecyclerViewItemClicked
+import net.codeinreal.projects.bestplace.listeners.SwipeToEditCallback
 import org.koin.android.ext.android.bind
 
 class MainActivity : AppCompatActivity() {
@@ -52,6 +55,20 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+
+        val editSwipeCallback = object:SwipeToEditCallback(this){
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                //viewHolder.absoluteAdapterPosition//int 0 1 2
+                //bestPlaceAdapter.list.get(viewHolder.absoluteAdapterPosition)//bestPlace
+                val title = bestPlaceAdapter.list.get(viewHolder.absoluteAdapterPosition).title//bestPlace
+                Toast.makeText(this@MainActivity,title,Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
+        val itemTouchHelper = ItemTouchHelper(editSwipeCallback)
+
+        itemTouchHelper.attachToRecyclerView(binding.recyclerViewMain)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
