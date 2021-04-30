@@ -30,7 +30,8 @@ import java.io.IOException
 class AddPlaceActivity : AppCompatActivity() {
     lateinit var binding: ActivityAddPlaceBinding
     var imageAddressLocation: String? = null
-    private var id:String? = null
+    private var id: String? = null
+    private var bestPlaceSelecetToEdit: BestPlace? = null
 
     companion object {
         const val TAG = "TAG"
@@ -61,8 +62,21 @@ class AddPlaceActivity : AppCompatActivity() {
 
         }
 
-        if(intent.extras?.getString("id") != null){
+        if (intent.extras?.getString("id") != null) {
             id = intent.extras?.getString("id")
+            val db = DatabaseHandler(this@AddPlaceActivity)
+            val bestPlace = db.getPlaceById(id!!)
+            bestPlaceSelecetToEdit = bestPlace
+            binding.edtTitle.setText(bestPlace.title)
+            binding.edtDescription.setText(bestPlace.description)
+            binding.edtDate.setText(bestPlace.date)
+            binding.edtLocation.setText(bestPlace.location)
+            val imageBitmap = MediaStore.Images.Media.getBitmap(
+                contentResolver,
+                Uri.fromFile(File(bestPlace.image))
+            )
+
+            binding.imageViewSelectedPicture.setImageBitmap(imageBitmap)
         }
 
         binding.buttonSelectImage.setOnClickListener {
@@ -94,6 +108,10 @@ class AddPlaceActivity : AppCompatActivity() {
             val description = binding.edtDescription.text.toString()
             val date = binding.edtDate.text.toString()
             val location = binding.edtLocation.text.toString()
+
+            if (imageAddressLocation == null) {
+                imageAddressLocation = bestPlaceSelecetToEdit?.image//uri
+            }
             val myBestPlace =
                 BestPlace(title, imageAddressLocation!!, description, date, location, 0.0, 0.0)
 

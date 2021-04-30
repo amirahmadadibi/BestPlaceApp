@@ -51,10 +51,33 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, "bestplace",
         contentValues.put(KEY_LATITUDE, bestPlace.latitude)
         contentValues.put(KEY_LONGITUDE, bestPlace.longitude)
 
-        writableDatabase.insertWithOnConflict(TABLE_NAME, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE)
+        writableDatabase.insertWithOnConflict(
+            TABLE_NAME,
+            null,
+            contentValues,
+            SQLiteDatabase.CONFLICT_REPLACE
+        )
         writableDatabase.close()
     }
 
+
+    fun getPlaceById(id: String):BestPlace {
+        val getQuery = "select * from ${TABLE_NAME} where KEY_ID='$id'"//sql query
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(getQuery,null)
+        cursor.moveToNext()
+        val bestPlace = BestPlace(
+            cursor.getString(cursor.getColumnIndex(KEY_TITLE)),
+            cursor.getString(cursor.getColumnIndex(KEY_IMAGE)),
+            cursor.getString(cursor.getColumnIndex(KEY_DESCRIPTION)),
+            cursor.getString(cursor.getColumnIndex(KEY_DATE)),
+            cursor.getString(cursor.getColumnIndex(KEY_LOCATION)),
+            cursor.getString(cursor.getColumnIndex(KEY_LATITUDE)).toDouble(),
+            cursor.getString(cursor.getColumnIndex(KEY_LONGITUDE)).toDouble()
+        )
+        bestPlace.id = cursor.getString(cursor.getColumnIndex(KEY_ID))
+        return bestPlace
+    }
 
     fun getAllPlaces(): ArrayList<BestPlace> {
         val getAllQuery = "select * from ${TABLE_NAME}"//sql query
@@ -77,12 +100,12 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, "bestplace",
 
                 bestplaceArray.add(bestPlace)
             }
-            if(!cursor.isClosed) cursor.close()
+            if (!cursor.isClosed) cursor.close()
         } catch (ex: SQLiteException) {
             ex.printStackTrace()
         }
 
         db.close()
-        return  bestplaceArray
+        return bestplaceArray
     }
 }
