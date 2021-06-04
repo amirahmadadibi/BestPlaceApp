@@ -48,20 +48,20 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerViewMain.adapter = bestPlaceAdapter
         binding.recyclerViewMain.layoutManager = LinearLayoutManager(this)
 
-        bestPlaceAdapter.setRecyclerViewItemClicked(object:OnRecyclerViewItemClicked{
+        bestPlaceAdapter.setRecyclerViewItemClicked(object : OnRecyclerViewItemClicked {
             override fun onBestPlaceItemClicked(position: Int, bestPlace: BestPlace) {
-                val detailIntent = Intent(this@MainActivity,DetailsActivity::class.java)
-                detailIntent.putExtra("bestPlace",bestPlace)
+                val detailIntent = Intent(this@MainActivity, DetailsActivity::class.java)
+                detailIntent.putExtra("bestPlace", bestPlace)
                 startActivity(detailIntent)
             }
 
         })
 
-        val editSwipeCallback = object:SwipeToEditCallback(this){
+        val editSwipeCallback = object : SwipeToEditCallback(this) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val id = bestPlaceAdapter.list.get(viewHolder.absoluteAdapterPosition).id
-                val intentEdit = Intent(this@MainActivity,AddPlaceActivity::class.java)
-                intentEdit.putExtra("id",id)
+                val intentEdit = Intent(this@MainActivity, AddPlaceActivity::class.java)
+                intentEdit.putExtra("id", id)
                 startActivityForResult(intentEdit, REQUEST_EDIT_PLACE)
             }
 
@@ -76,12 +76,20 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_ADD_PLACE) {
-                setupRecyclerView()
+                updateRecyclerveiwAdapter()
             }
 
-            if(requestCode == REQUEST_EDIT_PLACE){
-                setupRecyclerView()
+            if (requestCode == REQUEST_EDIT_PLACE) {
+                updateRecyclerveiwAdapter()
             }
         }
+    }
+
+
+    fun updateRecyclerveiwAdapter(){
+        val db = DatabaseHandler(this)
+        val adapter = binding.recyclerViewMain.adapter as BestPlaceAdapter
+
+        adapter.updateAdapter(db.getAllPlaces())
     }
 }

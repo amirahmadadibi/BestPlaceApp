@@ -54,4 +54,10 @@ class BestPlaceAdapter(var context: Context, var list: ArrayList<BestPlace>) :
     fun setRecyclerViewItemClicked(onRecyclerViewItemClicked: OnRecyclerViewItemClicked){
         this.onRecyclerViewItemClicked = onRecyclerViewItemClicked
     }
+
+
+    fun updateAdapter(list:ArrayList<BestPlace>){
+        this.list = list
+        notifyDataSetChanged()
+    }
 }
