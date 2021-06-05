@@ -267,7 +267,7 @@ class AddPlaceActivity : AppCompatActivity() {
 
 
     fun saveImageInInternalStorage(bitmap: Bitmap): String {
-        val fileAndPath = buildFile("test.jpg")
+        val fileAndPath = buildFile("test${System.currentTimeMillis()}.jpg")
         try {
             val portal = buildOutputStream(fileAndPath)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, portal)
