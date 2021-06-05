@@ -61,10 +61,10 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, "bestplace",
     }
 
 
-    fun getPlaceById(id: String):BestPlace {
+    fun getPlaceById(id: String): BestPlace {
         val getQuery = "select * from ${TABLE_NAME} where KEY_ID='$id'"//sql query
         val db = this.readableDatabase
-        val cursor = db.rawQuery(getQuery,null)
+        val cursor = db.rawQuery(getQuery, null)
         cursor.moveToNext()
         val bestPlace = BestPlace(
             cursor.getString(cursor.getColumnIndex(KEY_TITLE)),
@@ -107,5 +107,18 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, "bestplace",
 
         db.close()
         return bestplaceArray
+    }
+
+
+    fun deletePlace(id: String?): Boolean {
+        if (id.isNullOrEmpty()) {
+            return false
+        }
+
+        val db = this.writableDatabase//open
+        val result = db.delete(TABLE_NAME, "$KEY_ID=?", arrayOf(id))
+        db.close()
+
+        return result == 1
     }
 }

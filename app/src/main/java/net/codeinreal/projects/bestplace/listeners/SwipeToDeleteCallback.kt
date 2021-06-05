@@ -8,18 +8,12 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import net.codeinreal.projects.bestplace.R
 
-// TODO (Step 1: Create a class for delete feature same as edit feature just changed the icon and direction.)
-// START
-// For detail explanation of this class you can look at below link.
-// https://medium.com/@kitek/recyclerview-swipe-to-delete-easier-than-you-thought-cff67ff5e5f6
-/**
- * A abstract class which we will use for delete feature.
- */
+
 abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
     private val deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete)
-    private val intrinsicWidth = deleteIcon!!.intrinsicWidth
-    private val intrinsicHeight = deleteIcon!!.intrinsicHeight
+    private val intrinsicWidth = deleteIcon!!.intrinsicWidth+20
+    private val intrinsicHeight = deleteIcon!!.intrinsicHeight+20
     private val background = ColorDrawable()
     private val backgroundColor = Color.parseColor("#f44336")
     private val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
@@ -60,7 +54,7 @@ abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleC
         background.setBounds(itemView.right + dX.toInt(), itemView.top, itemView.right, itemView.bottom)
         background.draw(c)
 
-        // Calculate position of delete icon
+        // Calculate position of edit icon
         val deleteIconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
         val deleteIconMargin = (itemHeight - intrinsicHeight) / 2
         val deleteIconLeft = itemView.right - deleteIconMargin - intrinsicWidth

@@ -75,7 +75,13 @@ class MainActivity : AppCompatActivity() {
 
         val deleteSwipeCallback = object: SwipeToDeleteCallback(this){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
+                val id = bestPlaceAdapter.list.get(viewHolder.absoluteAdapterPosition).id
+                val db = DatabaseHandler(this@MainActivity)
+                if(db.deletePlace(id)){
+                    updateRecyclerveiwAdapter()
+                }else{
+                    Toast.makeText(this@MainActivity,"error",Toast.LENGTH_SHORT).show()
+                }
             }
 
         }
