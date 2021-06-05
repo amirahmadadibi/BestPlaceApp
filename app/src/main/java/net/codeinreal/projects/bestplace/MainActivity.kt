@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.happyplaces.utils.SwipeToDeleteCallback
 import net.codeinreal.projects.bestplace.databinding.ActivityMainBinding
 import net.codeinreal.projects.bestplace.list.BestPlaceAdapter
 import net.codeinreal.projects.bestplace.listeners.OnRecyclerViewItemClicked
@@ -70,6 +71,17 @@ class MainActivity : AppCompatActivity() {
         val itemTouchHelper = ItemTouchHelper(editSwipeCallback)
 
         itemTouchHelper.attachToRecyclerView(binding.recyclerViewMain)
+
+
+        val deleteSwipeCallback = object: SwipeToDeleteCallback(this){
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+            }
+
+        }
+
+        val itemDeleteTouchHelper = ItemTouchHelper(deleteSwipeCallback)
+        itemDeleteTouchHelper.attachToRecyclerView(binding.recyclerViewMain)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
