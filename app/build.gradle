@@ -57,4 +57,9 @@ dependencies {
 
     debugImplementation("com.infinum.dbinspector:dbinspector:5.2.9")
     releaseImplementation("com.infinum.dbinspector:dbinspector-no-op:5.2.9")
+
+    //mapbox
+    implementation 'com.mapbox.maps:android:10.0.0-beta.21'
+
+
 }
