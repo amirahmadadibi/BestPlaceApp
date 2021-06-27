@@ -8,4 +8,5 @@
     <color name="secondaryDarkColor">#102027</color>
     <color name="primaryTextColor">#fafafa</color>
     <color name="secondaryTextColor">#eceff1</color>
+    <color name="blue">#1E8CAB</color>
 </resources>

@@ -20,8 +20,10 @@
             app:mapbox_cameraZoom="0"/>
 
         <Button
+            android:id="@+id/buttonSelectCurrentPlace"
+            android:layout_margin="8dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:text="انتخاب این مکان"
             android:layout_gravity="bottom"/>
     </FrameLayout>
