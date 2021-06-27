@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,14 +14,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
         android:theme="@style/Theme.BestPlace">
-        <activity android:name=".DetailsActivity"></activity>
-        <activity android:name=".AddPlaceActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".SelectPlaceActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".DetailsActivity" />
+        <activity android:name=".AddPlaceActivity" />
+        <activity android:name=".MainActivity">
+
         </activity>
     </application>
 
