@@ -43,22 +43,35 @@ class SelectPlaceActivity : AppCompatActivity() {
                 showRedPickerImage()
                 creteGreenSelectedMark(style)
                 binding.buttonSelectCurrentPlace.setOnClickListener {
-                    val mapTargetLatLan = mapBoxMap!!.cameraPosition.target
-                    hoveringMarker!!.visibility = View.INVISIBLE
+                    if(hoveringMarker!!.visibility == View.VISIBLE){
+                        val mapTargetLatLan = mapBoxMap!!.cameraPosition.target
+                        hoveringMarker!!.visibility = View.INVISIBLE
 
-                    binding.buttonSelectCurrentPlace.setBackgroundColor(
-                        ContextCompat.getColor(this,R.color.mapbox_blue)!!)
+                        binding.buttonSelectCurrentPlace.setBackgroundColor(
+                            ContextCompat.getColor(this,R.color.mapbox_blue)!!)
 
-                    binding.buttonSelectCurrentPlace.setText("موقعیت انتخاب شد !")
+                        binding.buttonSelectCurrentPlace.setText("ویرایش موقعیت انتخاب شده")
 
-                    val source = style.getSourceAs<GeoJsonSource>("dropped-icon-image")
+                        val source = style.getSourceAs<GeoJsonSource>("dropped-icon-image")
 
-                    val targetPoint = Point.fromLngLat(mapTargetLatLan.longitude,mapTargetLatLan.latitude)
+                        val targetPoint = Point.fromLngLat(mapTargetLatLan.longitude,mapTargetLatLan.latitude)
 
-                    source!!.setGeoJson(targetPoint)
+                        source!!.setGeoJson(targetPoint)
 
-                    droppedMarkerLayer = style.getLayer(DROPPED_MARKER_LAYER_ID)
-                    droppedMarkerLayer!!.setProperties(PropertyFactory.visibility(Property.VISIBLE))
+                        droppedMarkerLayer = style.getLayer(DROPPED_MARKER_LAYER_ID)
+                        droppedMarkerLayer!!.setProperties(PropertyFactory.visibility(Property.VISIBLE))
+                    }else{
+                        binding.buttonSelectCurrentPlace.setBackgroundColor(
+                            ContextCompat.getColor(this,R.color.primaryColor)!!)
+
+                        binding.buttonSelectCurrentPlace.setText("انتخاب موقعیت مکان")
+
+                        hoveringMarker!!.visibility = View.VISIBLE
+
+                        droppedMarkerLayer = style.getLayer(DROPPED_MARKER_LAYER_ID)
+                        droppedMarkerLayer!!.setProperties(PropertyFactory.visibility(Property.NONE))
+                    }
+
                 }
             }
         }
