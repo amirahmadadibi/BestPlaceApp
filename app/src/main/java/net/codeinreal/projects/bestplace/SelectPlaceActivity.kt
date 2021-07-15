@@ -1,7 +1,10 @@
 package net.codeinreal.projects.bestplace
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.location.Location
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -23,6 +26,13 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.camera.CameraPosition
+import com.mapbox.mapboxsdk.camera.CameraUpdate
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
+import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
+import com.mapbox.mapboxsdk.location.modes.CameraMode
+import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.Property
@@ -37,6 +47,9 @@ class SelectPlaceActivity : AppCompatActivity() {
     lateinit var binding: ActivitySelectPlaceBinding
     private var hoveringMarker: ImageView? = null
     private var droppedMarkerLayer: Layer? = null
+    private lateinit var manager: LocationManager
+    var locationLan: Double? = null
+    var locationlong: Double? = null
 
     companion object {
         const val DROPPED_MARKER_LAYER_ID = "DROPPED_MARKER_LAYER_ID"
@@ -50,7 +63,7 @@ class SelectPlaceActivity : AppCompatActivity() {
         )
         binding = ActivitySelectPlaceBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
-
+        manager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync { mapBoxMap ->
             mapBoxMap.setStyle(Style.MAPBOX_STREETS) { style ->
@@ -59,9 +72,50 @@ class SelectPlaceActivity : AppCompatActivity() {
 
                 binding.fabCurrentLocation.setOnClickListener {
 
-                    if(!checkLocationPermission()){
-                        Toast.makeText(this@SelectPlaceActivity,"permission error", Toast.LENGTH_SHORT).show()
+                    if (!checkLocationPermission()) {
+                        Toast.makeText(
+                            this@SelectPlaceActivity,
+                            "permission error",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
                     }
+
+
+                    //initialize location component
+                    val locationComponent = mapBoxMap.locationComponent
+
+                    val activeLocation =
+                        LocationComponentActivationOptions.builder(this, style).build()
+
+                    locationComponent.activateLocationComponent(activeLocation)
+
+
+                    locationComponent.isLocationComponentEnabled = true
+
+                    locationComponent.cameraMode = CameraMode.TRACKING
+                    locationComponent.renderMode = RenderMode.NORMAL
+
+                    if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                        Toast.makeText(
+                            this@SelectPlaceActivity,
+                            "جی پی اس را فعال کنید!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }else{
+                        locationLan = locationComponent.lastKnownLocation?.latitude ?: 35.715895
+                        locationlong = locationComponent.lastKnownLocation?.longitude ?: 51.394200
+                    }
+
+                    val cameraPosition = CameraPosition.Builder()
+                        .target(LatLng(locationLan!!,locationlong!!))
+                        .zoom(17.0)
+                        .tilt(30.0)
+                        .build()
+
+                    mapBoxMap.animateCamera(
+                        CameraUpdateFactory.newCameraPosition(cameraPosition),7000
+                    )
                 }
 
                 binding.buttonSelectCurrentPlace.setOnClickListener {
