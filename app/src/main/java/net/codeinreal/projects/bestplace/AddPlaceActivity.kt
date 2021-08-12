@@ -32,11 +32,14 @@ class AddPlaceActivity : AppCompatActivity() {
     var imageAddressLocation: String? = null
     private var id: String? = null
     private var bestPlaceSelecetToEdit: BestPlace? = null
+    private var lat: Double? = null
+    private var lon: Double? = null
 
     companion object {
         const val TAG = "TAG"
         const val REQUEST_CODE_CAMERA = 13134
         const val REQUEST_CODE_GALLERY = 13135
+        const val REQUEST_CODE_SELECT_PLACE = 131412
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +54,11 @@ class AddPlaceActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
-
+        binding.buttonSelectLocation.setOnClickListener {
+            val intentSelectLocation =
+                Intent(this@AddPlaceActivity, SelectPlaceActivity::class.java)
+            startActivityForResult(intentSelectLocation, REQUEST_CODE_SELECT_PLACE)
+        }
         binding.edtDate.showSoftInputOnFocus = false
 
         binding.edtDate.setOnFocusChangeListener { v, hasFocus ->
@@ -113,7 +120,15 @@ class AddPlaceActivity : AppCompatActivity() {
                 imageAddressLocation = bestPlaceSelecetToEdit?.image//uri
             }
             val myBestPlace =
-                BestPlace(title, imageAddressLocation!!, description, date, location, 0.0, 0.0)
+                BestPlace(
+                    title,
+                    imageAddressLocation!!,
+                    description,
+                    date,
+                    location,
+                    lat ?: 0.0,
+                    lon ?: 0.0
+                )
 
             id?.let {
                 myBestPlace.id = it
@@ -261,6 +276,15 @@ class AddPlaceActivity : AppCompatActivity() {
 
             if (requestCode == REQUEST_CODE_GALLERY) {
                 Toast.makeText(this, "فایلی انتخاب نکردید", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_SELECT_PLACE) {
+                lat = data?.getDoubleExtra("lat", 0.0)
+                lon = data?.getDoubleExtra("lon", 0.0)
+
+                Toast.makeText(this@AddPlaceActivity, "${lat}${lon}", Toast.LENGTH_SHORT).show()
             }
         }
     }

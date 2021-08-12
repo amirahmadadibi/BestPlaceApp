@@ -1,6 +1,7 @@
 package net.codeinreal.projects.bestplace
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -122,7 +123,13 @@ class SelectPlaceActivity : AppCompatActivity() {
                     if (hoveringMarker!!.visibility == View.VISIBLE) {
                         val mapTargetLatLan = mapBoxMap!!.cameraPosition.target
                         hoveringMarker!!.visibility = View.INVISIBLE
-
+                        val x = mapTargetLatLan.latitude
+                        val y = mapTargetLatLan.longitude
+                        val locationDataIntent = Intent()
+                        locationDataIntent.putExtra("lat",x)
+                        locationDataIntent.putExtra("lon",y)
+                        setResult(Activity.RESULT_OK,locationDataIntent)
+                        finish()
                         binding.buttonSelectCurrentPlace.setBackgroundColor(
                             ContextCompat.getColor(this, R.color.mapbox_blue)!!
                         )
