@@ -34,6 +34,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
+import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.Property
@@ -51,7 +52,7 @@ class SelectPlaceActivity : AppCompatActivity() {
     private lateinit var manager: LocationManager
     var locationLan: Double? = null
     var locationlong: Double? = null
-
+    private var isInEditMode = false
     companion object {
         const val DROPPED_MARKER_LAYER_ID = "DROPPED_MARKER_LAYER_ID"
     }
@@ -66,57 +67,21 @@ class SelectPlaceActivity : AppCompatActivity() {
         setContentView(binding.root)
         manager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         binding.mapView.onCreate(savedInstanceState)
+
+        if(intent.extras?.getDouble("lat") != null && intent.extras?.getDouble("lon") != null){
+            isInEditMode = true
+            locationLan = intent.extras?.getDouble("lat")
+            locationlong = intent.extras?.getDouble("lon")
+        }
         binding.mapView.getMapAsync { mapBoxMap ->
             mapBoxMap.setStyle(Style.MAPBOX_STREETS) { style ->
                 showRedPickerImage()
                 creteGreenSelectedMark(style)
-
+                if(isInEditMode){
+                    goToCurrentLocation(mapBoxMap,style)
+                }
                 binding.fabCurrentLocation.setOnClickListener {
-
-                    if (!checkLocationPermission()) {
-                        Toast.makeText(
-                            this@SelectPlaceActivity,
-                            "permission error",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        return@setOnClickListener
-                    }
-
-
-                    //initialize location component
-                    val locationComponent = mapBoxMap.locationComponent
-
-                    val activeLocation =
-                        LocationComponentActivationOptions.builder(this, style).build()
-
-                    locationComponent.activateLocationComponent(activeLocation)
-
-
-                    locationComponent.isLocationComponentEnabled = true
-
-                    locationComponent.cameraMode = CameraMode.TRACKING
-                    locationComponent.renderMode = RenderMode.NORMAL
-
-                    if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-                        Toast.makeText(
-                            this@SelectPlaceActivity,
-                            "جی پی اس را فعال کنید!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }else{
-                        locationLan = locationComponent.lastKnownLocation?.latitude ?: 35.715895
-                        locationlong = locationComponent.lastKnownLocation?.longitude ?: 51.394200
-                    }
-
-                    val cameraPosition = CameraPosition.Builder()
-                        .target(LatLng(locationLan!!,locationlong!!))
-                        .zoom(17.0)
-                        .tilt(30.0)
-                        .build()
-
-                    mapBoxMap.animateCamera(
-                        CameraUpdateFactory.newCameraPosition(cameraPosition),7000
-                    )
+                    goToCurrentLocation(mapBoxMap, style)
                 }
 
                 binding.buttonSelectCurrentPlace.setOnClickListener {
@@ -126,9 +91,9 @@ class SelectPlaceActivity : AppCompatActivity() {
                         val x = mapTargetLatLan.latitude
                         val y = mapTargetLatLan.longitude
                         val locationDataIntent = Intent()
-                        locationDataIntent.putExtra("lat",x)
-                        locationDataIntent.putExtra("lon",y)
-                        setResult(Activity.RESULT_OK,locationDataIntent)
+                        locationDataIntent.putExtra("lat", x)
+                        locationDataIntent.putExtra("lon", y)
+                        setResult(Activity.RESULT_OK, locationDataIntent)
                         finish()
                         binding.buttonSelectCurrentPlace.setBackgroundColor(
                             ContextCompat.getColor(this, R.color.mapbox_blue)!!
@@ -243,5 +208,54 @@ class SelectPlaceActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun goToCurrentLocation(mapBoxMap: MapboxMap, style: Style) {
 
+        if (!checkLocationPermission()) {
+            Toast.makeText(
+                this@SelectPlaceActivity,
+                "permission error",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+
+        //initialize location component
+        val locationComponent = mapBoxMap.locationComponent
+
+        val activeLocation =
+            LocationComponentActivationOptions.builder(this, style).build()
+
+        locationComponent.activateLocationComponent(activeLocation)
+
+
+        locationComponent.isLocationComponentEnabled = true
+
+        locationComponent.cameraMode = CameraMode.TRACKING
+        locationComponent.renderMode = RenderMode.NORMAL
+
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Toast.makeText(
+                this@SelectPlaceActivity,
+                "جی پی اس را فعال کنید!",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            if(!isInEditMode){
+                locationLan = locationComponent.lastKnownLocation?.latitude ?: 35.715895
+                locationlong = locationComponent.lastKnownLocation?.longitude ?: 51.394200
+            }
+
+        }
+
+        val cameraPosition = CameraPosition.Builder()
+            .target(LatLng(locationLan!!, locationlong!!))
+            .zoom(17.0)
+            .tilt(30.0)
+            .build()
+
+        mapBoxMap.animateCamera(
+            CameraUpdateFactory.newCameraPosition(cameraPosition), 7000
+        )
+    }
 }

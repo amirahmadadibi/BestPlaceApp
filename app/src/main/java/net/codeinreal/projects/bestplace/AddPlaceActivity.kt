@@ -21,6 +21,7 @@ import ir.hamsaa.persiandatepicker.Listener
 import ir.hamsaa.persiandatepicker.PersianDatePickerDialog
 import ir.hamsaa.persiandatepicker.util.PersianCalendar
 import net.codeinreal.projects.bestplace.databinding.ActivityAddPlaceBinding
+import org.koin.android.ext.android.bind
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -34,6 +35,9 @@ class AddPlaceActivity : AppCompatActivity() {
     private var bestPlaceSelecetToEdit: BestPlace? = null
     private var lat: Double? = null
     private var lon: Double? = null
+    private var isInEditMode = false
+
+
 
     companion object {
         const val TAG = "TAG"
@@ -57,6 +61,10 @@ class AddPlaceActivity : AppCompatActivity() {
         binding.buttonSelectLocation.setOnClickListener {
             val intentSelectLocation =
                 Intent(this@AddPlaceActivity, SelectPlaceActivity::class.java)
+            if(isInEditMode){
+                intentSelectLocation.putExtra("lat",lat)
+                intentSelectLocation.putExtra("lon",lon)
+            }
             startActivityForResult(intentSelectLocation, REQUEST_CODE_SELECT_PLACE)
         }
         binding.edtDate.showSoftInputOnFocus = false
@@ -70,9 +78,12 @@ class AddPlaceActivity : AppCompatActivity() {
         }
 
         if (intent.extras?.getString("id") != null) {
+            isInEditMode = true
             id = intent.extras?.getString("id")
             val db = DatabaseHandler(this@AddPlaceActivity)
             val bestPlace = db.getPlaceById(id!!)
+            lat  = bestPlace.latitude
+            lon = bestPlace.longitude
             bestPlaceSelecetToEdit = bestPlace
             binding.edtTitle.setText(bestPlace.title)
             binding.edtDescription.setText(bestPlace.description)
@@ -82,8 +93,13 @@ class AddPlaceActivity : AppCompatActivity() {
                 contentResolver,
                 Uri.fromFile(File(bestPlace.image))
             )
-
+            val latLon = "${bestPlace.latitude} | ${bestPlace.longitude}"
+            binding.edtLocation.setText(latLon)
             binding.imageViewSelectedPicture.setImageBitmap(imageBitmap)
+
+            binding.buttonSelectLocation.text = "ویرایش این مکان"
+            binding.buttonSelectImage.text = "ویرایش عکس"
+            binding.buttonAddPlace.text = "ذخیره ویرایش این مکان"
         }
 
         binding.buttonSelectImage.setOnClickListener {
