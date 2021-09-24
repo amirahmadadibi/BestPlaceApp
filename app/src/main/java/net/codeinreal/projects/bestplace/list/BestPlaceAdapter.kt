@@ -26,6 +26,7 @@ class BestPlaceAdapter(var context: Context, var list: ArrayList<BestPlace>) :
     override fun onBindViewHolder(holder: BestPlaceViewHolder, position: Int) {
         val bestPlace = list[position]
         holder.textViewTitle.text = bestPlace.title
+        holder.textViewDescription.text = bestPlace.description
 
         val imageBitmap = MediaStore.Images.Media.getBitmap(
             context.contentResolver,
@@ -43,10 +44,12 @@ class BestPlaceAdapter(var context: Context, var list: ArrayList<BestPlace>) :
 
     class BestPlaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textViewTitle: TextView
+        var textViewDescription: TextView
         var imageViewPlace: ImageView
 
         init {
-            textViewTitle = itemView.findViewById(R.id.textViewTitle)
+            textViewTitle = itemView.findViewById(R.id.txtItemTitle)
+            textViewDescription = itemView.findViewById(R.id.txtItemDescription)
             imageViewPlace = itemView.findViewById(R.id.imageViewPlace)
         }
     }
